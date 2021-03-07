@@ -73,6 +73,7 @@ $APPLICATION->SetTitle("Новости");
 	"PAGER_DESC_NUMBERING_CACHE_TIME" => "36000000",
 	"PAGER_SHOW_ALL" => "N",
 	"AJAX_OPTION_ADDITIONAL" => "",
+    "SET_SPECIALDATE_PROPERTY" => "Y",
 	"SEF_URL_TEMPLATES" => array(
 		"news" => "",
 		"section" => "",
