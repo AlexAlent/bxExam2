@@ -12,10 +12,11 @@ $arComponentParameters = array(
             "PARENT" => "BASE",
             "TYPE" => "STRING",
         ),
-        "LINK_TEMPLATE" => array(
+        "DETAIL_LINK_TEMPLATE" => array(
             "NAME" => GetMessage("SIMPLECOMP_EXAM2_LINK_TEMPLATE"),
             "PARENT" => "BASE",
             "TYPE" => "STRING",
+            "DEFAULT" => "catalog_exam/#SECTION_ID#/#ELEMENT_CODE#",
         ),
         "PROPERTY_CODE" => array(
             "NAME" => GetMessage("SIMPLECOMP_EXAM2_PROPERTY_CODE"),

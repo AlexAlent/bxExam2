@@ -9,7 +9,7 @@ $APPLICATION->SetTitle("Простой компонент");
 		"CACHE_TIME" => "36000000",
 		"CACHE_TYPE" => "A",
 		"CLASSF_IBLOCK_ID" => "5",
-		"LINK_TEMPLATE" => "",
+		"DETAIL_LINK_TEMPLATE" => "catalog_exam/#SECTION_ID#/#ELEMENT_CODE#",
 		"PRODUCTS_IBLOCK_ID" => "2",
 		"PROPERTY_CODE" => "FIRMA"
 	)

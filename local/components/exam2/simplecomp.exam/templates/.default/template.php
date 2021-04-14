@@ -19,8 +19,8 @@ Loc::loadMessages(__FILE__);
                                 <?=$arItems["NAME"];?> -
                                 <?=$arItems["PROPERTY"]["PRICE"]["VALUE"];?> -
                                 <?=$arItems["PROPERTY"]["MATERIAL"]["VALUE"];?> -
-                                <?=$arItems["PROPERTY"]["ARTNUMBER"]["VALUE"];?> -
-                                <a href="<?=$arItems["DETAIL_PAGE_URL"];?>"><?= Loc::getMessage('SIMPLECOMP_EXAM2_DETAIL_PAGE_URL'); ?></a>
+                                <?=$arItems["PROPERTY"]["ARTNUMBER"]["VALUE"];?>
+                                (<?=$arItems["DETAIL_PAGE_LINK"];?>.php)
                             </li>
                         <?php endforeach; ?>
                     </ul>

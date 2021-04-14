@@ -52,6 +52,7 @@ if ($this->startResultCache(false, array($USER->GetGroups()))) {
         "IBLOCK_ID",
         "IBLOCK_SECTION_ID",
         "NAME",
+        "CODE",
         "DETAIL_PAGE_URL",
     );
     $arFilterElementsCatalog = array (
@@ -60,11 +61,27 @@ if ($this->startResultCache(false, array($USER->GetGroups()))) {
         "PROPERTY_".$arParams["PROPERTY_CODE"] => $arClassifId,
         "ACTIVE" => "Y"
     );
+    $arSort = array(
+        "name" => "asc",
+        "sort" => "asc",
+    );
 
-    $rsClassifElements = CIBlockElement::GetList(array(), $arFilterElementsCatalog, false, false, $arSelectElementsCatalog);
+    $rsClassifElements = CIBlockElement::GetList($arSort, $arFilterElementsCatalog, false, false, $arSelectElementsCatalog);
 
     while($rsEl= $rsClassifElements->GetNextElement()) {
         $arFields = $rsEl->GetFields();
+        // Формируем ссылку по шаблону
+        $arFields['DETAIL_PAGE_LINK'] = str_replace(
+            array(
+                "#SECTION_ID#",
+                "#ELEMENT_CODE#",
+            ),
+            array(
+                $arFields['IBLOCK_SECTION_ID'],
+                $arFields['CODE'],
+            ),
+            $arParams['DETAIL_LINK_TEMPLATE']
+        );
         $arFields["PROPERTY"] = $rsEl->GetProperties();
         // Перебираем идентификаторы привязанных элементов классификатора
         foreach ($arFields["PROPERTY"]["FIRMA"]["VALUE"] as $value) {
