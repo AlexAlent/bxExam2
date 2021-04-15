@@ -20,8 +20,16 @@ if (!isset($arParams["PRODUCTS_IBLOCK_ID"]))
 if (!isset($arParams["NEWS_IBLOCK_ID"]))
     $arParams["NEWS_IBLOCK_ID"] = 0;
 
+use Bitrix\Main\Application;
+$request = Application::getInstance()->getContext()->getRequest();
+// Устанавливаем переменную фильтра
+$cFilter = false;
+// Если в запросе есть переменная F, ставим $cFilter в true
+if (isset($request['F'])){
+    $cFilter = true;
+}
 
-if ($this->startResultCache()){
+if ($this->startResultCache(false, array($cFilter))){
     $arResult = array();
 
     // Массив активных новостей
@@ -70,13 +78,24 @@ if ($this->startResultCache()){
 
     // Список активных товаров из разелов
     $arProducts = array();
+    $arFilterElements = array(
+        "IBLOCK_ID" => $arParams["PRODUCTS_IBLOCK_ID"],
+        "ACTIVE" => "Y",
+        "SECTION_ID" => $arSectionsID
+    );
+
+    // Если фильтр установлен, добавляем параметры в выборку и прерываем кеширование
+    if ($cFilter) {
+        $arFilterElements[] = array(
+            array("<=PROPERTY_PRICE" => 1700, "PROPERTY_MATERIAL" => "Дерево, ткань"),
+            array("<PROPERTY_PRICE" => 1500, "PROPERTY_MATERIAL" => "Металл, пластик"),
+            "LOGIC" => "OR"
+        );
+        $this->AbortResultCache();
+    }
     $obProduct = CIBlockElement::GetList(
         array(),
-        array(
-            "IBLOCK_ID" => $arParams["PRODUCTS_IBLOCK_ID"],
-            "ACTIVE" => "Y",
-            "SECTION_ID" => $arSectionsID
-        ),
+        $arFilterElements,
         false,
         false,
         array( // select - свойства из задания плюс IBLOCK_ID и ID для корректного вывода значений свойств
