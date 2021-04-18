@@ -91,8 +91,22 @@ if ($this->startResultCache()){
     );
 
     while ($arProduct = $obProduct->Fetch()) {
+        // Добавляем Эрмитаж
+        $arButtons = CIBlock::GetPanelButtons(
+            $arProduct["IBLOCK_ID"],
+            $arProduct["ID"],
+            0,
+            array("SECTION_BUTTONS"=>false, "SESSID"=>false)
+        );
+        $arProduct["EDIT_LINK"] = $arButtons["edit"]["edit_element"]["ACTION_URL"];
+        $arProduct["DELETE_LINK"] = $arButtons["edit"]["delete_element"]["ACTION_URL"];
+
         $arProducts[] = $arProduct;
     }
+
+    // Ссылка для добавления элементов
+    $arResult["ADD_LINK"] = $arButtons["edit"]["add_element"]["ACTION_URL"];
+    $arResult["IBLOCK_ID"] = $arParams["PRODUCTS_IBLOCK_ID"];
 
     $arResult['PRODUCTS_CNT'] = count($arProducts);
 

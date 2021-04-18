@@ -5,7 +5,7 @@
 
 <?php if (count($arResult["ITEMS"]) > 0): ?>
     <ul>
-        <?php foreach ($arResult["ITEMS"] as $arNews): ?>
+        <?php foreach ($arResult["ITEMS"] as $key => $arNews): ?>
             <li>
                 <b>
                     <?= $arNews["NAME"]; ?>
@@ -15,9 +15,16 @@
             </li>
 
             <?php if (count($arNews["PRODUCTS"]) > 0): ?>
-                <ul>
+                <?php
+                $this->AddEditAction("add_element".$key, $arResult["ADD_LINK"], CIBlock::GetArrayByID($arResult["IBLOCK_ID"], "ELEMENT_ADD"));
+                ?>
+                <ul id="<?=$this->GetEditAreaId("add_element".$key);?>">
                     <?php foreach ($arNews["PRODUCTS"] as $arProduct): ?>
-                        <li>
+                        <?php
+                        $this->AddEditAction($arNews["ID"]."_".$arProduct['ID'], $arProduct['EDIT_LINK'], CIBlock::GetArrayByID($arProduct["IBLOCK_ID"], "ELEMENT_EDIT"));
+                        $this->AddDeleteAction($arNews["ID"]."_".$arProduct['ID'], $arProduct['DELETE_LINK'], CIBlock::GetArrayByID($arProduct["IBLOCK_ID"], "ELEMENT_DELETE"), array("CONFIRM" => GetMessage('CT_BNL_ELEMENT_DELETE_CONFIRM')));
+                        ?>
+                        <li id="<?=$this->GetEditAreaId($arNews["ID"]."_".$arProduct['ID']);?>">
                             <?= $arProduct["NAME"]; ?> -
                             <?= $arProduct["PROPERTY_PRICE_VALUE"]; ?> -
                             <?= $arProduct["PROPERTY_MATERIAL_VALUE"]; ?> -
