@@ -19,7 +19,21 @@ if (empty($arParams["NEWS_IBLOCK_ID"]))
 $arParams["EXAM2_AUTHOR_PROPERTY"] = trim($arParams["EXAM2_AUTHOR_PROPERTY"]);
 
 $arParams["PROPERTY_AUTHOR_TYPE_UF"] = trim($arParams["PROPERTY_AUTHOR_TYPE_UF"]);
+// Добавляем кнопку в выпадающее меню
 global $USER;
+if ($USER->IsAuthorized()) {
+    $arButtons = CIBlock::GetPanelButtons($arParams["NEWS_IBLOCK_ID"]);
+    $this->AddIncludeAreaIcons(
+        array(
+            array(
+                "ID" => "linklb",
+                "TITLE" => GetMessage("IB_IN_ADMIN"),
+                "URL" => $arButtons["submenu"]["element_list"]["ACTION_URL"],
+                "IN_PARAMS_MENU" => true, // Показать в контекстном меню
+            )
+        )
+    );
+}
 if ($USER->IsAuthorized()) {
     $by = 'id';
     $order = 'asc';
