@@ -39,14 +39,20 @@ if ($this->startResultCache(false, array($USER->GetGroups(), $arNavigation))) {
         "CHECK_PERMISSIONS" => $arParams["CACHE_GROUPS"],
         "ACTIVE" => "Y"
     );
+    $arNavStartParams = array(
+        "nPageSize" => $arParams["ELEMENT_PER_PAGE"],
+        "bShowAll" => true
+    );
 
-    $rsClassfElements = CIBlockElement::GetList(array(), $arFilterElements, false, false, $arSelectElements);
+    $rsClassfElements = CIBlockElement::GetList(array(), $arFilterElements, false, $arNavStartParams, $arSelectElements);
 
     while($arClassfElement = $rsClassfElements->GetNext()) {
         $arClassif[$arClassfElement["ID"]] = $arClassfElement;
         $arClassifId[] = $arClassfElement["ID"];
     }
     $arResult["COUNT"] = count($arClassifId);
+
+    $arResult["NAV_STRING"] = $rsClassfElements->GetPageNavString(GetMessage("PAGE_TITLE"));
 
     // Получаем список элементов с привязками к классификатору
     $arSelectElementsCatalog = array (
@@ -62,14 +68,8 @@ if ($this->startResultCache(false, array($USER->GetGroups(), $arNavigation))) {
         "PROPERTY_".$arParams["PROPERTY_CODE"] => $arClassifId,
         "ACTIVE" => "Y"
     );
-    $arNavStartParams = array(
-        "nPageSize" => $arParams["ELEMENT_PER_PAGE"],
-        "bShowAll" => true
-    );
 
-    $rsClassifElements = CIBlockElement::GetList(array(), $arFilterElementsCatalog, false, $arNavStartParams, $arSelectElementsCatalog);
-
-    $arResult["NAV_STRING"] = $rsClassifElements->GetPageNavString(GetMessage("PAGE_TITLE"));
+    $rsClassifElements = CIBlockElement::GetList(array(), $arFilterElementsCatalog, false, false, $arSelectElementsCatalog);
 
     while($rsEl= $rsClassifElements->GetNextElement()) {
         $arFields = $rsEl->GetFields();
@@ -77,7 +77,9 @@ if ($this->startResultCache(false, array($USER->GetGroups(), $arNavigation))) {
         // Перебираем идентификаторы привязанных элементов классификатора
         foreach ($arFields["PROPERTY"]["FIRMA"]["VALUE"] as $value) {
             // Привязываем к элементам классификатора товары
-            $arClassif[$value]["ELEMENTS"][$arFields["ID"]] = $arFields;
+            if (isset($arClassif[$value])){
+                $arClassif[$value]["ELEMENTS"][$arFields["ID"]] = $arFields;
+            }
         }
     }
 
