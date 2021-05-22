@@ -22,7 +22,9 @@ if (empty($arParams["CLASSF_IBLOCK_ID"]))
 $arParams["PROPERTY_CODE"] = trim($arParams["PROPERTY_CODE"]);
 global $USER;
 
-if ($this->startResultCache(false, array($USER->GetGroups()))) {
+$arNavigation = CDBResult::GetNavParams(false);
+
+if ($this->startResultCache(false, array($USER->GetGroups(), $arNavigation))) {
     $arClassif = array(); //   Список элементов классификатора
     $arClassifId = array(); //   Список идентификаторов
     $arResult["COUNT"] = 0;
@@ -60,8 +62,14 @@ if ($this->startResultCache(false, array($USER->GetGroups()))) {
         "PROPERTY_".$arParams["PROPERTY_CODE"] => $arClassifId,
         "ACTIVE" => "Y"
     );
+    $arNavStartParams = array(
+        "nPageSize" => $arParams["ELEMENT_PER_PAGE"],
+        "bShowAll" => true
+    );
 
-    $rsClassifElements = CIBlockElement::GetList(array(), $arFilterElementsCatalog, false, false, $arSelectElementsCatalog);
+    $rsClassifElements = CIBlockElement::GetList(array(), $arFilterElementsCatalog, false, $arNavStartParams, $arSelectElementsCatalog);
+
+    $arResult["NAV_STRING"] = $rsClassifElements->GetPageNavString(GetMessage("PAGE_TITLE"));
 
     while($rsEl= $rsClassifElements->GetNextElement()) {
         $arFields = $rsEl->GetFields();
@@ -72,6 +80,7 @@ if ($this->startResultCache(false, array($USER->GetGroups()))) {
             $arClassif[$value]["ELEMENTS"][$arFields["ID"]] = $arFields;
         }
     }
+
     $arResult["CLASSIF"] = $arClassif;
     $this->SetResultCacheKeys(array("COUNT"));
     $this->includeComponentTemplate();

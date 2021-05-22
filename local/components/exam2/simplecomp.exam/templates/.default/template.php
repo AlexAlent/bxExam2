@@ -29,3 +29,8 @@ Loc::loadMessages(__FILE__);
         <?php endforeach; ?>
     </ul>
 <?php endif; ?>
+
+<p>
+    <b><?=Loc::getMessage('SIMPLECOMP_EXAM2_NAVY')?></b>
+</p>
+<?= $arResult['NAV_STRING']; ?>
