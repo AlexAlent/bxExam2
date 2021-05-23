@@ -2,6 +2,7 @@
     ---
     <br />
     <p><b><?=GetMessage("SIMPLECOMP_EXAM2_CAT_TITLE")?></b></p>
+    <p><?=GetMessage("SIMPLECOMP_EXAM2_TIME")?><?= time(); ?></p>
 
 <?php if (count($arResult["ITEMS"]) > 0): ?>
     <ul>

@@ -20,8 +20,10 @@ if (!isset($arParams["PRODUCTS_IBLOCK_ID"]))
 if (!isset($arParams["NEWS_IBLOCK_ID"]))
     $arParams["NEWS_IBLOCK_ID"] = 0;
 
+global $CACHE_MANAGER;
 
 if ($this->startResultCache()){
+    $CACHE_MANAGER->RegisterTag('iblock_id_3');
     $arResult = array();
 
     // Массив активных новостей
