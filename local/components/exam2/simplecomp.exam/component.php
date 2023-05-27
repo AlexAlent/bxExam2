@@ -1,13 +1,13 @@
-<?
+<?php
 if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 
 use Bitrix\Main\Loader,
-	Bitrix\Iblock;
+    Bitrix\Iblock\ElementTable;
 
 if(!Loader::includeModule("iblock"))
 {
-	ShowError(GetMessage("SIMPLECOMP_EXAM2_IBLOCK_MODULE_NONE"));
-	return;
+    ShowError(GetMessage("SIMPLECOMP_EXAM2_IBLOCK_MODULE_NONE"));
+    return;
 }
 
 // Устанавливаем дефолтные значения на случай, если не установлены в параметрах
@@ -21,7 +21,7 @@ if (!isset($arParams["NEWS_IBLOCK_ID"]))
     $arParams["NEWS_IBLOCK_ID"] = 0;
 
 
-if ($this->startResultCache()){
+if ($this->StartResultCache()){
     $arResult = array();
 
     // Массив активных новостей
@@ -38,6 +38,7 @@ if ($this->startResultCache()){
         false,
         array("ID", "NAME", "ACTIVE_FROM"), // select - свойства из задания
     );
+
     while ($newsElements = $obNews->Fetch()) {
         $arNewsID[] = $newsElements["ID"];
         $arNews[$newsElements["ID"]] = $newsElements;
@@ -52,13 +53,13 @@ if ($this->startResultCache()){
         array(
             "IBLOCK_ID" => $arParams["PRODUCTS_IBLOCK_ID"], // Обязателен в фильтре для вывода свойств UF_***
             "ACTIVE" => "Y",
-            $arParams["PRODUCTS_IBLOCK_ID_PROPERTY"] => $arNewsID
+            $arParams["NEWS_LINK_PROPERTY"] => $arNewsID
         ),
         false,
         array( // select - свойства из задания
             "ID",
             "NAME",
-            $arParams["PRODUCTS_IBLOCK_ID_PROPERTY"]
+            $arParams["NEWS_LINK_PROPERTY"]
         ),
         false
     );
@@ -100,7 +101,7 @@ if ($this->startResultCache()){
     foreach ($arProducts as $arCurProduct){
         // Так как каждый товар дефолтно привязан только к одному разделу
         // В разделе текущего товара перебираем массив идентификаторов привязянных новостей
-        foreach ($arSections[$arCurProduct["IBLOCK_SECTION_ID"]][$arParams["PRODUCTS_IBLOCK_ID_PROPERTY"]] as $newsId) {
+        foreach ($arSections[$arCurProduct["IBLOCK_SECTION_ID"]][$arParams["NEWS_LINK_PROPERTY"]] as $newsId) {
             if (isset($arNews[$newsId])){ // Если новость с нужным id в принципе существует
                 $arNews[$newsId]["PRODUCTS"][] = $arCurProduct;
             }
@@ -110,7 +111,7 @@ if ($this->startResultCache()){
     // Распределяем разделы по новостям
     foreach ($arSections as $arSection) {
         // В каждом разделе перебираем массив идентификаторов привязянных новостей
-        foreach ($arSection[$arParams["PRODUCTS_IBLOCK_ID_PROPERTY"]] as $newId) {
+        foreach ($arSection[$arParams["NEWS_LINK_PROPERTY"]] as $newId) {
             if (isset($arNews[$newId]))
                 $arNews[$newId]['SECTIONS'][] = $arSection["NAME"];
         }
@@ -120,9 +121,6 @@ if ($this->startResultCache()){
     $this->SetResultCacheKeys(array('PRODUCTS_CNT'));
 
     $this->includeComponentTemplate();
-} else {
-    $this->abortResultCache();
 }
 
 $APPLICATION->SetTitle(GetMessage('SIMPLECOMP_EXAM2_PRODUCTS_COUNT') . $arResult['PRODUCTS_CNT']);
-?>

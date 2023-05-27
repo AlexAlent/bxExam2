@@ -12,7 +12,7 @@ $arComponentParameters = array(
             "PARENT" => "BASE",
             "TYPE" => "STRING",
         ),
-        "PRODUCTS_IBLOCK_ID_PROPERTY" => array(
+        "NEWS_LINK_PROPERTY" => array(
             "NAME" => GetMessage("SIMPLECOMP_EXAM2_CAT_PROPERTY_IBLOCK_ID"),
             "PARENT" => "BASE",
             "TYPE" => "STRING",
