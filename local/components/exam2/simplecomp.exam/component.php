@@ -22,7 +22,8 @@ if (empty($arParams["CLASSF_IBLOCK_ID"]))
 $arParams["PROPERTY_CODE"] = trim($arParams["PROPERTY_CODE"]);
 global $USER;
 
-if ($this->startResultCache(false, array($USER->GetGroups()))) {
+if ($this->startResultCache(false, array($USER->GetUserGroupArray()))) {
+    $arResult = array();
     $arClassif = array(); //   Список элементов классификатора
     $arClassifId = array(); //   Список идентификаторов
     $arResult["COUNT"] = 0;
