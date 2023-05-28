@@ -64,9 +64,16 @@ if ($this->StartResultCache()){
         false
     );
 
-    while ($arSectionCatalog = $obSection->Fetch()) {
-        $arSectionsID[] = $arSectionCatalog["ID"];
-        $arSections[$arSectionCatalog["ID"]] = $arSectionCatalog;
+    while ($arSection = $obSection->Fetch()) {
+        $arSectionsID[] = $arSection["ID"];
+        $arSections[$arSection["ID"]] = $arSection;
+        /* Распределяем разделы по новостям */
+        /* В каждом разделе перебираем массив идентификаторов привязянных новостей */
+        foreach ($arSection[$arParams["NEWS_LINK_PROPERTY"]] as $newId) {
+            /* Если новость есть, добавляем раздел в sections с ключом id */
+            if (isset($arNews[$newId]))
+                $arNews[$newId]["SECTIONS"][$arSection["ID"]] = $arSection["NAME"];
+        }
     }
 
     // Список активных товаров из разелов
@@ -93,29 +100,17 @@ if ($this->StartResultCache()){
 
     while ($arProduct = $obProduct->Fetch()) {
         $arProducts[] = $arProduct;
-    }
-
-    $arResult['PRODUCTS_CNT'] = count($arProducts);
-
-    // Распределяем товары по новостям
-    foreach ($arProducts as $arCurProduct){
-        // Так как каждый товар дефолтно привязан только к одному разделу
-        // В разделе текущего товара перебираем массив идентификаторов привязянных новостей
-        foreach ($arSections[$arCurProduct["IBLOCK_SECTION_ID"]][$arParams["NEWS_LINK_PROPERTY"]] as $newsId) {
-            if (isset($arNews[$newsId])){ // Если новость с нужным id в принципе существует
-                $arNews[$newsId]["PRODUCTS"][] = $arCurProduct;
+        /* Распределяем товары по новостям */
+        foreach ($arNews as $new){
+            /* Если id раздела текущего товара есть в списке разделов новости */
+            if (array_key_exists($arProduct["IBLOCK_SECTION_ID"], $new["SECTIONS"])){
+                /* то добавляем товар к этой новости */
+                $arNews[$new["ID"]]["PRODUCTS"][] = $arProduct;
             }
         }
     }
 
-    // Распределяем разделы по новостям
-    foreach ($arSections as $arSection) {
-        // В каждом разделе перебираем массив идентификаторов привязянных новостей
-        foreach ($arSection[$arParams["NEWS_LINK_PROPERTY"]] as $newId) {
-            if (isset($arNews[$newId]))
-                $arNews[$newId]['SECTIONS'][] = $arSection["NAME"];
-        }
-    }
+    $arResult['PRODUCTS_CNT'] = count($arProducts);
 
     $arResult['ITEMS'] = $arNews;
     $this->SetResultCacheKeys(array('PRODUCTS_CNT'));
