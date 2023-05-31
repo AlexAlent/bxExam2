@@ -11,7 +11,20 @@
 /** @var string $componentPath */
 /** @var CBitrixComponent $component */
 $this->setFrameMode(true);
+$param1 = 'edit';
+$param2 = 789;
+$url = $arResult['FOLDER'] . str_replace(
+        array('#PARAM1#', '#PARAM2#'),
+        array($param1, $param2),
+        $arResult['URL_TEMPLATES']['exampage']
+    );
+if ($arParams['SEF_MODE'] != 'Y'){
+    foreach ($arResult['VARIABLES'] as $key => $variable){
+        $url .= '&' . $key . '=' . $variable;
+    }
+}
 ?>
+<?=GetMessage("EXAM_TEXT_LINK_CP_PHOTO")?> <a href="<?=$url?>"><?=$url?></a>
 <?$ElementID = $APPLICATION->IncludeComponent(
 	"bitrix:photo.detail",
 	"",
