@@ -7,7 +7,7 @@ $arTemplateParameters = array(
 		"TYPE" => "CHECKBOX",
 		"MULTIPLE" => "N",
 		"DEFAULT" => "Y",
-		"PARENT" => 'DETAIL_SETTINGS',
+		"PARENT" => 'AJAX_SETTINGS',
 	),
 );
 ?>

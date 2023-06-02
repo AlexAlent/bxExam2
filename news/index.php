@@ -82,7 +82,7 @@ $APPLICATION->SetTitle("Новости");
 		"ADD_ELEMENT_CHAIN" => "N",
 		"STRICT_SECTION_CHECK" => "N",
 		"DETAIL_SET_CANONICAL_URL" => "N",
-		"REPORT_AJAX" => "N",
+		"REPORT_AJAX" => "Y",
 		"PAGER_BASE_LINK_ENABLE" => "N",
 		"SHOW_404" => "N",
 		"MESSAGE_404" => "",
