@@ -8,41 +8,9 @@
 	<?endif;?>
 	<?if($arParams["DISPLAY_NAME"]!="N" && $arResult["NAME"]):?>
 		<h3><?=$arResult["NAME"]?></h3>
+    <a href="./?report=Y&new_id=<?=$arResult["ID"]?>" id="report">Пожаловаться</a>
+    <p id="report_result" style="color: red; display: none;"></p>
 	<?endif;?>
-
-    <? if ($arParams['REPORT_AJAX'] == 'Y'): ?>
-        <?php CJSCore::Init(array('ajax')); ?>
-        <script>
-            (function (BX) {
-                BX.ready(function () {
-                    var ajaxReportBtn = document.getElementById('ajax-report');
-                    ajaxReportBtn.onclick = function () {
-                        BX.ajax.loadJSON(
-                            '<?=$APPLICATION->GetCurPage()?>',
-                            {'TYPE': 'REPORT_AJAX', 'ID': <?=$arResult['ID']?>},
-                            function (data){
-                                var textElem = document.getElementById('ajax-report-text');
-                                textElem.innerText = "Ваше мнение учтено, №" + data['ID'];
-                            },
-                            function (data){
-                                var textElem = document.getElementById('ajax-report-text');
-                                textElem.innerText = "Ошибка!";
-                            }
-                        );
-                    };
-                });
-            })(BX);
-        </script>
-        <span style="font-size: 13px;">
-		    <a id="ajax-report" href="#" onclick="">Пожаловаться!</a>
-		<span id="ajax-report-text"></span>
-	</span>
-    <? else: ?>
-        <span style="font-size: 13px;">
-		    <a href="<?=$APPLICATION->GetCurPage()?>?TYPE=REPORT_GET&ID=<?=$arResult['ID']?>">Пожаловаться!</a>
-		    <span id="ajax-report-text"></span>
-	    </span>
-    <?endif;?>
 <br /><br />
 
 	<div class="news-detail">
@@ -76,3 +44,44 @@
 	<?endforeach;?>
 	</div>
 </div>
+
+<?php if ($arParams['REPORT_AJAX'] == 'Y'): ?>
+<?php CJSCore::Init(array('ajax')); ?>
+    <script>
+        BX.ready(function(){
+            BX.bind(
+                BX('report'),
+                'click',
+                function(e) {
+                    BX.PreventDefault(e);
+                    var postData = {
+                        'new_id': <?=$arResult["ID"]?>,
+                        'report': 'Y',
+                        'ajax': 'Y',
+                    };
+                    BX.ajax({
+                        url: '.',
+                        method: 'POST',
+                        data: postData,
+                        dataType: 'html',
+                        onsuccess: function(result){
+                            BX.adjust(BX('report_result'),
+                                {
+                                    html: result,
+                                    style: {display: 'block'}
+                                }
+                            );
+                        },
+                        onfailure: function(result){
+                            BX.adjust(BX('report_result'),
+                                {
+                                    html: 'Ошибка!',
+                                    style: {display: 'block'}
+                                }
+                            );
+                        }
+                    });
+                });
+        });
+    </script>
+<?php endif; ?>

@@ -1,50 +1,69 @@
 <?php if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
-CJSCore::Init(array('ajax'));
-if ($_GET['TYPE'] == 'REPORT_RESULT') {
-    if ($_GET['ID']) {
-        echo '<script>
-		var textElem = document.getElementById("ajax-report-text");
-		textElem.innerText = "Ваше мнение учтено, №' . $_GET['ID'] . '";
-		window.history.pushState(null, null, "' . $APPLICATION->GetCurPage() . '");
-	</script>';
+
+use Bitrix\Main\Application;
+$request = Application::getInstance()->getContext()->getRequest();
+define('REPORT_IBLOCK_ID', 6);
+global $USER;
+global $APPLICATION;
+?>
+
+<?php
+if ($request['report'] == 'Y' && intval($request['new_id']) > 0){
+    $newId = intval($request['new_id']);
+    $name = session_id() . '_' . $newId;
+
+    /* Проверка на случай если пользователь уже жаловался */
+    $res = CIBlockElement::GetList(
+            array(),
+            array('IBLOCK_ID' => REPORT_IBLOCK_ID, 'ACTIVE' => 'Y', 'NAME' => $name),
+            false,
+            array("nTopCount" => 1),
+            array('ID')
+    );
+    /* Если пользователь уже жаловался */
+    if (intval($res->SelectedRowsCount()) > 0){
+        $result = 'Уже жаловалcя';
     } else {
-        echo '<script>
-		var textElem = document.getElementById("ajax-report-text");
-		textElem.innerText = "Ошибка";
-		window.history.pushState(null, null, "'.$APPLICATION->GetCurPage().'");
-	</script>';
-    }
-} else if (isset($_GET['ID'])) {
-    $jsonObject = array();
-    if (CModule::IncludeModule('iblock')) {
-        $arUser = '';
+        /* Добавляем жалобу */
         if ($USER->IsAuthorized()){
-            $arUser = $USER->GetID() . " (" . $USER->GetLogin() . ") " . $USER->GetFullName();
-        }
-        else{
-            $arUser = "Не авторизован";
-        }
-        $arFields = array(
-            'IBLOCK_ID' => 6, // ИБ "Жалобы на новости"
-            'NAME' => 'Новость ' . $_GET['ID'],
-            'ACTIVE_FROM' => \Bitrix\Main\Type\DateTime::createFromTimestamp(time()),
-            'PROPERTY_VALUES' => array(
-                'USER' => $arUser,
-                'NEWS' => $_GET['ID']
-            )
-        );
-        $element = new CIBlockElement(false);
-        if ($elId = $element->Add($arFields)) {
-            $jsonObject['ID'] = $elId;
-            if ($_GET['TYPE'] == 'REPORT_AJAX') {
-                $APPLICATION->RestartBuffer();
-                echo json_encode($jsonObject);
-                die();
-            } else if ($_GET['TYPE'] == 'REPORT_GET') {
-                LocalRedirect($APPLICATION->GetCurPage() . "?TYPE=REPORT_RESULT&ID=" . $jsonObject['ID']);
-            }
+            $userName = $USER->GetID() . " (" . $USER->GetLogin() . ") " . $USER->GetFullName();
         } else {
-            LocalRedirect($APPLICATION->GetCurPage() . "?TYPE=REPORT_RESULT");
+            $userName = 'Не авторизован';
         }
+
+        $element = new CIBlockElement();
+        $arFields = array(
+                'IBLOCK_ID' => REPORT_IBLOCK_ID,
+                'NAME' => $name,
+                'ACTIVE_FROM' => \Bitrix\Main\Type\DateTime::createFromTimestamp(time()),
+                'PROPERTY_VALUES' => array(
+                        'USER' => $userName,
+                        'NEWS' => $newId,
+                ),
+        );
+        if ($elId = $element->Add($arFields)) {
+            $result = 'Ваше мнение учтено, №' . $elId;
+        } else {
+            $result = 'Ошибка!';
+        }
+
     }
+
+    if (isset($request['ajax'])){
+        $APPLICATION->RestartBuffer();
+        die($result);
+    } else {
+        ?>
+        <script>
+            BX.adjust(
+                BX('report_result'),
+                {
+                    html: '<?=$result?>',
+                    style: {display: 'block'}
+                }
+            );
+        </script>
+        <?php
+    }
+
 }
