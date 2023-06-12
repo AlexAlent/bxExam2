@@ -3,70 +3,53 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 
 function CheckUserCount()
 {
-    $date = new DateTime();
-    // Приводим дату к необходимому формату
-    $date = \Bitrix\Main\Type\DateTime::createFromTimestamp($date->getTimestamp());
-    // Получаем из системы записанное ранее свойство
-    $lastDate = COption::GetOptionString("main", "last_date_agent_runs");
+    $last_user_id = COption::GetOptionInt('main', 'last_user_id', 0);
 
-    // Если свойство не пустое формируем фильтр
-    if ($lastDate) {
-        $arFilter =array(
-            "DATE_REGISTER_1" => $lastDate,
-        );
-    } else {
-        $arFilter = array();
-    }
-
-    $arUsers = array();
-    // Получаем список зарегистрированых пользователей согласно фильтру
-    $by = "DATE_REGISTER";
-    $order = "ASC";
-    $rsUser = CUser::GetList(
-        $by,
-        $order,
-        $arFilter
+    $rsUsers = CUser::GetList(
+        ($by="id"),
+        ($order="desc"),
+        array('>ID' => $last_user_id),
+        array('FIELDS' => array('ID')),
     );
 
-    while ($user = $rsUser->Fetch()) {
-        $arUsers [] = $user;
-    }
+    if ($users_count = $rsUsers->SelectedRowsCount()) {
+        $arUser = $rsUsers->Fetch();
+        $new_last_id = $arUser['ID'];
 
-    if (!$lastDate) {
-        $lastDate = $arUsers[0]["DATE_REGISTER"];
-    }
+        if ($time_check_users = COption::GetOptionInt('main', 'time_check_users', 0)){
+            $days = round((time() - $time_check_users) / 86400);
+            if (!$days){
+                $days = 1;
+            }
+        } else {
+            $days = 1;
+        }
 
-    // Получаем разницу в секундах между текущей датой и датой последнего запуска функции
-    $difference = intval(abs(strtotime($lastDate) - strtotime($date->toString())));
-    // Преобразуем секунды в дни
-    $days = round($difference / (3600 * 24));
-    // Получаем колличество пользователей
-    $countUsers = count($arUsers);
-    // Получаем всех администраторов
-    $by = "ID";
-    $order = "ASC";
-    $rsAdmin = CUser::GetList(
-        $by,
-        $order,
-        array("GROUPS_ID" => 1)
-    );
-
-    while ($admin = $rsAdmin->Fetch()) {
-        // Отправляяем письмо администратору
-        CEvent::Send(
-            "COUNT_REGISTERED_USERS",
-            "s1",
-            array(
-                "EMAIL_TO" => $admin["EMAIL"],
-                "AMOUNT_USERS" => $countUsers,
-                "AMOUNT_DAYS" => $days,
-            ),
-            "Y",
-            EXAM_MAIL_TEMPLATE
+        // Получаем всех администраторов
+        $rsAdmin = CUser::GetList(
+            ($by="id"),
+            ($order="desc"),
+            array("GROUPS_ID" => array('1')),
+            array('FIELDS' => array('ID', 'EMAIL')),
         );
+
+        while ($admin = $rsAdmin->Fetch()) {
+            // Отправляяем письмо администратору
+            CEvent::Send(
+                "COUNT_REGISTERED_USERS",
+                "s1",
+                array(
+                    "EMAIL_TO" => $admin["EMAIL"],
+                    "AMOUNT_USERS" => $users_count,
+                    "AMOUNT_DAYS" => $days,
+                ),
+                "N",
+                EXAM_MAIL_TEMPLATE
+            );
+        }
+        COption::SetOptionInt("main", "last_user_id", $new_last_id);
     }
 
-    // Записываем в систему обновленное значение переменной
-    COption::SetOptionString("main", "last_date_agent_runs", $date->toString());
+    COption::SetOptionInt("main", "time_check_users", time());
     return "CheckUserCount();";
 }
