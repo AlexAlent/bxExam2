@@ -20,4 +20,9 @@ if (!is_array($arResult['SECTION']))
 
 $arResult['PRICES']['PRICE']['PRINT_VALUE'] = number_format($arResult['PROPERTIES']['PRICE']['VALUE'], 0, '.', ' ');
 $arResult['PRICES']['PRICE']['PRINT_VALUE'] .= ' '.$arResult['PROPERTIES']['PRICECURRENCY']['VALUE_ENUM'];
-?>
+
+/* Ex2-43 */
+$slogan = trim($arResult["~PREVIEW_TEXT"]);
+$arResult["TEXT_FOR_SLOGAN"] = mb_substr($slogan,0,42)."...";
+$obComponent = $this->GetComponent();
+$obComponent->SetResultCacheKeys(array("TEXT_FOR_SLOGAN"));
