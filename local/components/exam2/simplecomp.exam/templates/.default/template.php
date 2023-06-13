@@ -17,7 +17,9 @@
                 <ul>
                     <?php foreach ($arClassif["PRODUCTS"] as $arProduct): ?>
                         <li>
-                            <?= $arProduct["NAME"]; ?> -
+                            <?= $arProduct["NAME"]; ?>
+                            <a href="<?=$arProduct["DETAIL_PAGE_URL"]?>">
+                                (<?= $arProduct["DETAIL_PAGE_URL"]; ?>)</a> -
                             <?= $arProduct["PROPERTY_PRICE_VALUE"]; ?> -
                             <?= $arProduct["PROPERTY_MATERIAL_VALUE"]; ?> -
                             <?= $arProduct["PROPERTY_ARTNUMBER_VALUE"]; ?>

@@ -96,6 +96,7 @@ if ($this->StartResultCache()){
             "PROPERTY_ARTNUMBER",
             "PROPERTY_MATERIAL",
             "PROPERTY_PRICE",
+            "DETAIL_PAGE_URL",
         )
     );
 
