@@ -20,4 +20,12 @@ if (!is_array($arResult['SECTION']))
 
 $arResult['PRICES']['PRICE']['PRINT_VALUE'] = number_format($arResult['PROPERTIES']['PRICE']['VALUE'], 0, '.', ' ');
 $arResult['PRICES']['PRICE']['PRINT_VALUE'] .= ' '.$arResult['PROPERTIES']['PRICECURRENCY']['VALUE_ENUM'];
-?>
+
+// Ex2-109
+if (!empty($arResult["DETAIL_PICTURE"]["SRC"])) {
+    $arResult["STYLE"] = 'background-image: url('.$arResult["DETAIL_PICTURE"]["SRC"].'); background-size: contain;';
+} else {
+    $arResult["STYLE"] = "";
+}
+$obComponent = $this->GetComponent();
+$obComponent->SetResultCacheKeys(array("STYLE"));
