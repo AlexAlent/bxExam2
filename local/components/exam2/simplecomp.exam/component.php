@@ -24,11 +24,10 @@ global $USER;
 if ($USER->IsAuthorized()) {
     $this->AddIncludeAreaIcon(
         array(
-            'URL'   => $APPLICATION->GetCurPage() . '?hello=world',
+            'URL'   => $APPLICATION->GetCurPageParam("hello=world", array('hello')),
             'TITLE' => GetMessage("HELLO_WORLD"), // Добавить фразу в lang файл
         )
     );
-
 }
 
 if ($this->StartResultCache()){
