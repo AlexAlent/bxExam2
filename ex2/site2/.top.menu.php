@@ -1,0 +1,25 @@
+<?
+$aMenuLinks = Array(
+	Array(
+		"main", 
+		"/ex2/site2/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"about", 
+		"/ex2/site2/about/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"news", 
+		"/ex2/site2/news/", 
+		Array(), 
+		Array(), 
+		"" 
+	)
+);
+?>
