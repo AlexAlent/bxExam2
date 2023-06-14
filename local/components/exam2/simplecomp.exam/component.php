@@ -20,6 +20,16 @@ if (!isset($arParams["PRODUCTS_IBLOCK_ID"]))
 if (!isset($arParams["NEWS_IBLOCK_ID"]))
     $arParams["NEWS_IBLOCK_ID"] = 0;
 
+global $USER;
+if ($USER->IsAuthorized()) {
+    $this->AddIncludeAreaIcon(
+        array(
+            'URL'   => $APPLICATION->GetCurPage() . '?hello=world',
+            'TITLE' => GetMessage("HELLO_WORLD"), // Добавить фразу в lang файл
+        )
+    );
+
+}
 
 if ($this->StartResultCache()){
     $arResult = array();
