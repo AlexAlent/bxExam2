@@ -21,7 +21,9 @@ if(!isset($arParams["CACHE_TIME"]))
 
 $arParams["CLASSIF_LINK_CODE"] = trim($arParams["CLASSIF_LINK_CODE"]);
 
-if($this->startResultCache())
+$arNavigation = CDBResult::GetNavParams(false);
+
+if($this->startResultCache(false, array($arNavigation)))
 {
     $arResult = array();
 
@@ -37,15 +39,22 @@ if($this->startResultCache())
     );
     $arSortSect = array ();
 
+    $arPagination = array(
+        "nPageSize" => $arParams["ELEMENT_PER_PAGE"],
+        "bShowAll" => true
+    );
+
     $arResult["CLASSIFICATOR"] = array();
-    $rsSections = CIBlockSection::GetList($arSortSect, $arFilterSect, false, $arSelectSect, false);
+    $rsSections = CIBlockSection::GetList($arSortSect, $arFilterSect, false, $arSelectSect, $arPagination);
     while($arSection = $rsSections->GetNext())
     {
         $arResult["CLASSIFICATOR"][$arSection['ID']] = $arSection;
     }
     $arSectionsIds = array_keys($arResult["CLASSIFICATOR"]);
 
-	
+    /* Пагинация */
+    $arResult["NAV_STRING"] = $rsSections->GetPageNavString(GetMessage("PAGE_TITLE"));
+
 	//iblock elements
 	$arSelectElems = array (
 		"ID",

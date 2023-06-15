@@ -1,4 +1,8 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();?>
+<?php
+    use Bitrix\Main\Localization\Loc;
+    Loc::loadMessages(__FILE__);
+?>
     ---
     <br />
     <p><b><?=GetMessage("SIMPLECOMP_EXAM2_CAT_TITLE")?></b></p>
@@ -28,4 +32,10 @@
     </ul>
     </br>
     ---
+
+    <p>
+        <b><?=Loc::getMessage('SIMPLECOMP_EXAM2_NAVY')?></b>
+    </p>
+    <?= $arResult['NAV_STRING']; ?>
+
 <?php endif; ?>
