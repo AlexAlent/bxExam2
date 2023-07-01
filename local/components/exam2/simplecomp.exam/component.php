@@ -16,9 +16,9 @@ if (empty($arParams["CACHE_TIME"]))
 if (empty($arParams["NEWS_IBLOCK_ID"]))
     $arParams["NEWS_IBLOCK_ID"] = 0;
 
-$arParams["EXAM2_AUTHOR_PROPERTY"] = trim($arParams["EXAM2_AUTHOR_PROPERTY"]);
+$arParams["AUTHOR_PROPERTY"] = trim($arParams["AUTHOR_PROPERTY"]);
 
-$arParams["PROPERTY_AUTHOR_TYPE_UF"] = trim($arParams["PROPERTY_AUTHOR_TYPE_UF"]);
+$arParams["AUTHOR_TYPE_UF"] = trim($arParams["AUTHOR_TYPE_UF"]);
 
 global $USER;
 if (!$USER->IsAuthorized()) {
@@ -30,7 +30,7 @@ if ($this->StartResultCache(false , array($currentUserId))) {
 
     $rsUser = CUser::GetByID($currentUserId);
     $arUser = $rsUser->Fetch();
-    $currentUserType = $arUser[$arParams["PROPERTY_AUTHOR_TYPE_UF"]];
+    $currentUserType = $arUser[$arParams["AUTHOR_TYPE_UF"]];
 
     // Получаем пользователей, того же типа, как у текущего, включая текущего
     $userList = array();
@@ -40,7 +40,7 @@ if ($this->StartResultCache(false , array($currentUserId))) {
         $by,
         $order,
         array(
-            $arParams["PROPERTY_AUTHOR_TYPE_UF"] => $currentUserType,
+            $arParams["AUTHOR_TYPE_UF"] => $currentUserType,
         ),
         array(
             "SELECT" => array("LOGIN", "ID")
@@ -57,7 +57,7 @@ if ($this->StartResultCache(false , array($currentUserId))) {
         array(),
         array(
             "IBLOCK_ID" => $arParams["NEWS_IBLOCK_ID"],
-            "PROPERTY_".$arParams["EXAM2_AUTHOR_PROPERTY"] => $userListId,
+            "PROPERTY_".$arParams["AUTHOR_PROPERTY"] => $userListId,
         ),
         false,
         false,
@@ -66,7 +66,7 @@ if ($this->StartResultCache(false , array($currentUserId))) {
             "ACTIVE_FROM",
             "ID",
             "IBLOCK_ID",
-            "PROPERTY_".$arParams["EXAM2_AUTHOR_PROPERTY"]
+            "PROPERTY_".$arParams["AUTHOR_PROPERTY"]
         )
     );
 
@@ -77,7 +77,8 @@ if ($this->StartResultCache(false , array($currentUserId))) {
             $arNewsList[$arNews["ID"]] = $arNews;
         }
         // У каждой новости определим массив идентификаторов привязанных к ней авторов
-        $arNewsList[$arNews["ID"]]["AUTHORS"][] = $arNews["PROPERTY_".$arParams["EXAM2_AUTHOR_PROPERTY"]."_VALUE"];
+        $authorId = $arNews["PROPERTY_".$arParams["AUTHOR_PROPERTY"]."_VALUE"];
+        $arNewsList[$arNews["ID"]]["AUTHORS"][] = $authorId;
     }
 
     foreach ($arNewsList as $curNew) {

@@ -7,12 +7,12 @@ $arComponentParameters = array(
             "PARENT" => "BASE",
             "TYPE" => "STRING",
         ),
-        "EXAM2_AUTHOR_PROPERTY" => array(
+        "AUTHOR_PROPERTY" => array(
             "NAME" => GetMessage("SIMPLECOMP_EXAM2_AUTHOR_PROPERTY"),
             "PARENT" => "BASE",
             "TYPE" => "STRING",
         ),
-        "PROPERTY_AUTHOR_TYPE_UF" => array(
+        "AUTHOR_TYPE_UF" => array(
             "NAME" => GetMessage("SIMPLECOMP_EXAM2_AUTHOR_TYPE_UF"),
             "PARENT" => "BASE",
             "TYPE" => "STRING",
